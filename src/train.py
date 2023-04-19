@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 import config
 from customDataset import CustomDataset
 from torch.utils.tensorboard import SummaryWriter
+import logging
 
 import pickle
 
@@ -13,6 +14,15 @@ from evolutionNeuralNetworksUtils import  convert_chromosome_to_nn, create_chrom
 
 
 if __name__ == "__main__":
+    from datetime import datetime
+
+    filename = "logs/"+datetime.now().strftime("%d-%m-%Y %H-%M-%S")#Setting the filename from current date and time
+    logging.basicConfig(filename=filename, filemode='a',
+                    format="%(asctime)s, %(msecs)d %(name)s %(levelname)s [ %(filename)s-%(module)s-%(lineno)d ]  : %(message)s",
+                    datefmt="%H:%M:%S",
+                    level=logging.DEBUG)
+
+
     config = config.config
     writer = SummaryWriter("torchlogs/")
     data_folder = config['data_folder']
@@ -37,54 +47,82 @@ if __name__ == "__main__":
     best_model_path = config['best_model_path']
     device = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu'
     #device = 'cpu'
-    print("writer",writer)
-    print("data_folder",data_folder)
-    print("subjects_range",subjects_range)
-    print("series_range",series_range)
-    print("train_test_split_ratio",train_test_split_ratio)
-    print("epochs",epochs)
-    print("batch_size",batch_size)
-    print("learning_rate",learning_rate)
-    print("num_generations",num_generations)
-    print("population_size",population_size)
-    print("kernel_size",kernel_size)
-    print("min_layers",min_layers)
-    print("max_layers",max_layers)
-    print("layer_sizes",layer_sizes)
-    print("activations",activations)
-    print("drop_out",drop_out)
-    print("selection_rate",selection_rate)
-    print("crossover_rate",crossover_rate)
-    print("mutation_rate",mutation_rate)
-    print("criterion",criterion)
-    print("best_model_path",best_model_path)
-    print("device",device)
+    logging.debug("data_folder")
+    logging.debug(str(data_folder))
+    logging.debug("subjects_range")
+    logging.debug(str(subjects_range))
+    logging.debug("series_range")
+    logging.debug(str(series_range))
+    logging.debug("train_test_split_ratio")
+    logging.debug(str(train_test_split_ratio))
+    logging.debug("epochs")
+    logging.debug(str(epochs))
+    logging.debug("batch_size")
+    logging.debug(str(batch_size))
+    logging.debug("learning_rate")
+    logging.debug(str(learning_rate))
+    logging.debug("num_generations")
+    logging.debug(str(num_generations))
+    logging.debug("population_size")
+    logging.debug(str(population_size))
+    logging.debug("kernel_size")
+    logging.debug(str(kernel_size))
+    logging.debug("min_layers")
+    logging.debug(str(min_layers))
+    logging.debug("max_layers")
+    logging.debug(str(max_layers))
+    logging.debug("layer_sizes")
+    logging.debug(str(layer_sizes))
+    logging.debug("activations")
+    logging.debug(str(activations))
+    logging.debug("drop_out")
+    logging.debug(str(drop_out))
+    logging.debug("selection_rate")
+    logging.debug(str(selection_rate))
+    logging.debug("crossover_rate")
+    logging.debug(str(crossover_rate))
+    logging.debug("mutation_rate")
+    logging.debug(str(mutation_rate))
+    logging.debug("criterion")
+    logging.debug(str(criterion))
+    logging.debug("best_model_path")
+    logging.debug(str(best_model_path))
+    logging.debug("device")
+    logging.debug(str(device))
+
     
 
+    logging.debug("Loading dataset")
     train_data = CustomDataset(data_folder, subjects_range, series_range, train_test_split_ratio, train=True)
     test_data = CustomDataset(data_folder, subjects_range, series_range, train_test_split_ratio, train=False)
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
+    logging.debug("Loaded dataset")
+
     count_individual = 0 
 
     input_size = train_data.input_data.shape[1]
     output_size = train_data.output_data.shape[1]
-    print("input_size ", input_size )
-    print("output_size ", output_size )
+    logging.debug("input_size")
+    logging.debug(input_size )
+    logging.debug("output_size")
+    logging.debug(output_size )
     population = [create_chromosome(layer_sizes=layer_sizes,kernel_sizes=kernel_size ,dropouts=drop_out,activations=activations,min_count_of_layer=min_layers,max_count_of_layer=max_layers,input_shape=(input_size,), output_shape=(output_size,)) for x in range(population_size) ]
     stats = []
 
     best_fitness = float('inf')
     best_chromosome = []
     for gen in range(num_generations):
-        print("Gen ", gen)
+        logging.debug("Gen ")
+        logging.debug(gen)
         fitness_of_gen = []
         loss_of_gen = []
         for individual in population:
-            print(count_individual+1)
-            print("Architecture:",)
+            logging.debug(count_individual+1)
+            logging.debug("Architecture:")
             for layer in individual:
-                print(" ", layer)
+                logging.debug(layer)
+
             nn_model = convert_chromosome_to_nn(individual, input_shape=(input_size,), output_shape=(output_size,))
             nn_model = nn_model.to(device=device)
             optimizer = optim.Adam(nn_model.parameters(),learning_rate)
@@ -92,19 +130,21 @@ if __name__ == "__main__":
             fittness = evaluate_nn(nn_model=nn_model,test_loader=test_loader,device=device,criterion=criterion)
             if fittness < best_fitness:
                 best_fitness = fittness
-                print("New best fitness" ,best_fitness )
+                logging.debug("New best fitness" )
+                logging.debug(best_fitness )
                 best_chromosome = individual
-                print("New best chromosome" ,best_chromosome )
+                logging.debug("New best chromosome")
+                logging.debug(best_chromosome )
                 best_model = nn_model
                 torch.save(nn_model.state_dict(), best_model_path)
                 inputs,labels = next(iter(train_loader))
                 inputs, labels = inputs.to(device), labels.to(device)
-
                 writer.add_graph(best_model,input_to_model=inputs)
+
 
             fitness_of_gen.append(fittness)
             loss_of_gen.append(loss)
-            print(fittness)
+            logging.debug(fittness)
             count_individual += 1
 
         thisdict = {}
@@ -114,9 +154,10 @@ if __name__ == "__main__":
         thisdict["fitness_of_gen"] = fitness_of_gen
 
         stats.append(thisdict)
+        logging.debug(stats)
         population = new_population(population=population,
                                     fitness=fitness_of_gen,
-                                    num_parents=2,
+                                    num_parents=4,
                                     mutation_rate=mutation_rate,
                                     layer_sizes=layer_sizes,
                                     kernel_sizes=kernel_size,

@@ -103,5 +103,5 @@ def catplot(stats):
 #catplot(stats)
 #box_plot(stats)
 
-#box_plot_mat(stats=stats)
+box_plot_mat(stats=stats)
 bar_graph_mat(stats=stats)

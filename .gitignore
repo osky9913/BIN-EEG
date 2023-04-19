@@ -1,4 +1,5 @@
 .DS_Store
+logs/
 Dataset.zip
 dataset/
 test/

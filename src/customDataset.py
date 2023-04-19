@@ -10,17 +10,17 @@ class CustomDataset(Dataset):
         self.output_data = []
 
         for subject in subjects_range:
-            print(subject)
+            #print(subject)
             for series in series_range:
-                print(series)
+                #print(series)
 
                 input_filename = f"subj{subject}_series{series}_data.csv"
                 output_filename = f"subj{subject}_series{series}_events.csv"
 
                 input_filepath = os.path.join(data_folder, input_filename)
                 output_filepath = os.path.join(data_folder, output_filename)
-                print(input_filepath)
-                print(output_filepath)
+                #print(input_filepath)
+                #print(output_filepath)
                 if not os.path.exists(input_filepath) or not os.path.exists(output_filepath):
                     continue
 
@@ -39,17 +39,17 @@ class CustomDataset(Dataset):
 
         self.input_data = np.vstack(self.input_data)
         self.output_data = np.vstack(self.output_data)
-        print("All ", len(self.input_data))
+        #print("All ", len(self.input_data))
 
         split_index = int(len(self.input_data) * train_test_split_ratio)
         if train:
             self.input_data = self.input_data[:split_index]
             self.output_data = self.output_data[:split_index]
-            print("Train ", len(self.input_data))
+            #print("Train ", len(self.input_data))
         else:
             self.input_data = self.input_data[split_index:]
             self.output_data = self.output_data[split_index:]
-            print("Test ", len(self.output_data))
+            #print("Test ", len(self.output_data))
 
 
     def __len__(self):
