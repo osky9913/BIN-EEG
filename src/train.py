@@ -9,15 +9,20 @@ from torch.utils.tensorboard import SummaryWriter
 import logging
 
 import pickle
+from eegDataset import EegDataset
 
 from evolutionNeuralNetworksUtils import  convert_chromosome_to_nn, create_chromosome, evaluate_nn, new_population, train_nn
 
 
 if __name__ == "__main__":
     from datetime import datetime
-
     filename = "logs/"+datetime.now().strftime("%d-%m-%Y %H-%M-%S")#Setting the filename from current date and time
-    logging.basicConfig(filename=filename, filemode='a',
+
+    file_handler = logging.FileHandler(filename=filename,mode='a')
+    stdout_handler = logging.StreamHandler(stream=sys.stdout)
+    handlers = [file_handler, stdout_handler]
+
+    logging.basicConfig( handlers=handlers,
                     format="%(asctime)s, %(msecs)d %(name)s %(levelname)s [ %(filename)s-%(module)s-%(lineno)d ]  : %(message)s",
                     datefmt="%H:%M:%S",
                     level=logging.DEBUG)
@@ -93,8 +98,8 @@ if __name__ == "__main__":
     
 
     logging.debug("Loading dataset")
-    train_data = CustomDataset(data_folder, subjects_range, series_range, train_test_split_ratio, train=True)
-    test_data = CustomDataset(data_folder, subjects_range, series_range, train_test_split_ratio, train=False)
+    train_data = EegDataset(data_folder, subjects_range, series_range, train_test_split_ratio, train=True)
+    test_data = EegDataset(data_folder, subjects_range, series_range, train_test_split_ratio, train=False)
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
     logging.debug("Loaded dataset")
