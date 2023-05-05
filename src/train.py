@@ -100,8 +100,8 @@ if __name__ == "__main__":
     logging.debug("Loading dataset")
     train_data = EegDataset(data_folder, subjects_range, series_range, train_test_split_ratio, train=True)
     test_data = EegDataset(data_folder, subjects_range, series_range, train_test_split_ratio, train=False)
-    train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
+    train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True,num_workers=4)
+    test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False,num_workers=4)
     logging.debug("Loaded dataset")
 
     count_individual = 0 

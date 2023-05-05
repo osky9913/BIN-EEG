@@ -1,13 +1,13 @@
 import torch.nn as nn
 config = {
     'data_folder': '../dataset',
-    'subjects_range': range(1, 4),
-    'series_range': range(1, 6),
+    'subjects_range': range(1, 2),
+    'series_range': range(1, 2),
     'learning_rate': 0.0001,
     'epochs': 5,
     'num_generations' : 5,
-    'num_individuals' : 10,
-    'batch_size': 2048,
+    'num_individuals' : 8,
+    'batch_size': 8192,
     'train_test_split_ratio': 0.7,
     'logs_folder': 'logs',
     'best_model_path': 'best_model.pth',

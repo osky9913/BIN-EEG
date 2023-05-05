@@ -57,5 +57,5 @@ class EegDataset(Dataset):
         return input_data, output_data
 
     def to(self, device):
-        self.input_data = torch.from_numpy(self.input_data).to(device)
-        self.output_data = torch.from_numpy(self.output_data).to(device)
+        self.input_data = self.input_data.to(device)
+        self.output_data = self.output_data.to(device)
