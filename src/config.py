@@ -1,12 +1,12 @@
 import torch.nn as nn
 config = {
     'data_folder': '../dataset',
-    'subjects_range': range(1, 2),
-    'series_range': range(1, 2),
+    'subjects_range': range(1, 3),
+    'series_range': range(1, 6),
     'learning_rate': 0.0001,
     'epochs': 5,
     'num_generations' : 5,
-    'num_individuals' : 8,
+    'num_individuals' : 6,
     'batch_size': 8192,
     'train_test_split_ratio': 0.7,
     'logs_folder': 'logs',
@@ -20,5 +20,5 @@ config = {
     'mutation_rate': 0.3,
     'crossover_rate':0.3,
     'min_layers' : 2,
-    'max_layers': 5
+    'max_layers': 6
 }

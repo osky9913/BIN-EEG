@@ -1,3 +1,4 @@
+#Martin Osvald
 import copy
 import pickle
 import torch
@@ -18,19 +19,7 @@ config = config.config
 
 
 
-def create_children_from_worse_half(population):
-    children  = []
-    for i in range(len(population)):
-        for j in range(i + 1, len(population)):
-            parent1 = population[i]
-            parent2 = population[j]
 
-            child1, child2 = crossover(parent1, parent2)
-            children.append(child1)
-            children.append(child2)
-
-
-    return children
 
 
 def create_population(num_individuals, input_size, output_size, min_layers, max_layers, min_nodes, max_nodes, max_pooling_layers):
@@ -291,10 +280,10 @@ if __name__ == '__main__':
             model.to(device=device)
             losses = train_nn(model, train_loader, epochs, learning_rate,device)
             accuracy,results = evaluate_accuracy(model, test_loader,device,individual=individual)
-            filename = "validationsIndividuals/" + str(individual) + ".txt"
-            if not os.path.exists(filename):
-                with open(filename, "w") as f:
-                    json.dumps(results,f)
+            filename = os.path.join("validationsIndividuals" , str(individual) + ".txt")
+            os.makedirs(os.path.dirname(filename),exist_ok=True)
+            with open(filename, "w") as f:
+                json.dump(results,f)
             f.close()
             stats[f"Generation {generation + 1}"]["individual" + str(count_chromo)]["losses"] = losses
             stats[f"Generation {generation + 1}"]["individual" + str(count_chromo)]["accuraccy"] = accuracy
