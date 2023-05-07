@@ -12,6 +12,29 @@ from sklearn.metrics import det_curve
 
 label_names = ['HandStart','FirstDigitTouch','BothStartLoadPhase','LiftOff','Replace','BothReleased']
 
+def dict_to_latex_table(data):
+    # Start the LaTeX table code
+    latex_code = "\\begin{table}[h]\n\\centering\n"
+
+    # Start the tabular environment with 6 columns
+    latex_code += "\\begin{tabular}{|c|c|c|c|c|c|}\n\\hline\n"
+
+    # Add the column headers
+    latex_code += "Class & Accuracy & Precision & Recall & F1-Score & AUC \\\\ \\hline\n"
+
+    # Add the data for each class
+    for cls in data:
+        # Extract the metrics for the current class
+        metrics = data[cls]
+
+        # Add a row with the class and its metrics
+        latex_code += "{} & {:.4f} & {:.4f} & {:.4f} & {:.4f} & {:.4f} \\\\ \\hline\n".format(cls, metrics['accuracy'], metrics['precision'], metrics['recall'], metrics['f1'], metrics['auc'])
+
+    # End the tabular environment and the table
+    latex_code += "\\end{tabular}\n\\end{table}"
+
+    return latex_code
+
 
 stats = {}
 fig, [ax_roc, ax_det] = plt.subplots(1, 2, figsize=(11, 5))
@@ -114,8 +137,10 @@ for i in range(12):
     ax_det.grid(linestyle="--")
 plt.legend()
 plt.show()
-print(stats)
+fig.savefig("ROC_DET.png")
+#print(stats)
 
+print(dict_to_latex_table(stats))
 #print(classification_report(targets, predicted,target_names=label_names))
 
 #print(targets)

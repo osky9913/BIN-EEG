@@ -17,29 +17,35 @@ with open('results.pickle', 'rb') as f:
 def plot_box_accuracy(stats):
     generations = []
     accuracies = []
+    fig, ax = plt.subplots() 
 
     for gen in stats:
         gen_accuracies = [ind['accuraccy'] for ind in stats[gen].values()]
         generations.append(gen)
         accuracies.append(gen_accuracies)
 
-    plt.boxplot(accuracies, labels=generations)
-    plt.xlabel("Generations")
-    plt.ylabel("Accuracy")
-    plt.title("Box plot of accuracy per generation")
-    plt.show()
+    ax.boxplot(accuracies, labels=generations)
+    ax.set_xlabel("Generations")
+    ax.set_ylabel("Accuracy")
+    ax.set_title("Box plot of accuracy per generation")
+    fig.savefig('Box_plot_of_accuracy_per_generation.png')
+
+    #plt.show()
 
 def plot_loss_lines(stats):
+    fig, ax = plt.subplots() 
     for gen in stats:
         for ind in stats[gen]:
             losses = stats[gen][ind]['losses']
-            plt.plot(losses, label=f"{gen}-{ind}")
+            ax.plot(losses, label=f"{gen}-{ind}")
 
-    plt.xlabel("Epochs")
-    plt.ylabel("Loss")
-    plt.title("Line graph of losses per individual")
+    ax.set_xlabel("Epochs")
+    ax.set_ylabel("Loss")
+    ax.set_title("Line graph of losses per individual")
     #plt.legend()
-    plt.show()
+    fig.savefig('Line_graph_of_losses_per_individual.png')
+
+    #plt.show()
 
 def average(numbers_list):
     total = sum(numbers_list)
@@ -61,32 +67,43 @@ def plot_accuracy_per_gen(stats):
     ax.set_ylabel(" ")
     ax.set_title("Accuracy mean per generation")
     ax.legend("")
-    plt.show()
+    
+    fig.savefig('Accuracy_mean_per_generationl.png')
+
+    #plt.show()
 
 def plot_accuracy_individuals(stats):
     individuals = []
     accuracies = []
-
+    fig, ax = plt.subplots()
+    individual = 0 
     for gen in stats:
         for ind in stats[gen]:
-            individuals.append(f"{gen}-{ind}")
-            accuracies.append(stats[gen][ind]['accuraccy'])
 
-    plt.plot(individuals, accuracies)
-    plt.xlabel("Individuals")
-    plt.ylabel("Accuracy")
-    plt.title("Accuracy per individuals")
-    plt.xticks(rotation=45)
-    plt.show()
+            individuals.append(f"{ind}")
+            accuracies.append(stats[gen][ind]['accuraccy'])
+    plt.rcParams["figure.autolayout"] = True
+    x = np.arange(0, len(accuracies), 1)
+
+    ax.plot(x, accuracies)
+    ax.set_xlabel("Individuals")
+    ax.set_ylabel("Accuracy")
+    ax.set_title("Accuracy per individuals")
+    ax.set_xticks(np.arange(min(x), max(x)+1, 1))  # Set x-axis ticks from 0 to 10 with a step of 1
+
+    #ax.set_xticks(rotation=45)
+    fig.savefig('Accuracy_per_individuals.png')
+
+    #plt.show()
 
 def find_best_accuracy(stats):
-    best_accuracy = float('inf')
+    best_accuracy = float('-inf')
     best_individual = None
 
     for generation, individuals in stats.items():
         for individual_id, individual_data in individuals.items():
             accuracy = individual_data['accuraccy']
-            if accuracy < best_accuracy:
+            if accuracy >best_accuracy:
                 best_accuracy = accuracy
                 best_individual = (generation, individual_id)
     print(best_individual, best_accuracy)
